@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.CQRS;
-using Catalog.API.Models;
-using Marten;
+﻿using Marten;
 
 namespace Catalog.API.Products.CreateProduct
 {
@@ -16,7 +14,7 @@ namespace Catalog.API.Products.CreateProduct
             Product product = MapCommandToProduct(command);
 
             session.Store(product);
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync(cancellationToken);
 
             return new CreateProductResult(product.Id);
         }
