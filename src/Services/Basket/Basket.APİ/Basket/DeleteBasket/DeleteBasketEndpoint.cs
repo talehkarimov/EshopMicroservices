@@ -1,7 +1,4 @@
-﻿
-using Basket.API.Basket.StoreBasket;
-
-namespace Basket.API.Basket.DeleteBasket
+﻿namespace Basket.API.Basket.DeleteBasket
 {
     // public record DeleteBasketRequest(string Username);
     public record DeleteBasketResponse(bool IsSuccess);
@@ -11,15 +8,16 @@ namespace Basket.API.Basket.DeleteBasket
         {
             app.MapDelete("/basket/{userName}", async (string userName, ISender sender) =>
             {
-                var result = sender.Send(new DeleteBasketCommand(userName));
+                var result = await sender.Send(new DeleteBasketCommand(userName));
                 var response = result.Adapt<DeleteBasketResponse>();
                 return Results.Ok(response);
             })
-            .WithName("CreateProduct")
-            .Produces<StoreBasketResponse>(StatusCodes.Status201Created)
+            .WithName("DeleteProduct")
+            .Produces<StoreBasketResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithSummary("Create Product")
-            .WithDescription("Create Product");
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithSummary("Delete Product")
+            .WithDescription("Delete Product");
         }
     }
 }

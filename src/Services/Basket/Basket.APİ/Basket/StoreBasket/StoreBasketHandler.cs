@@ -12,11 +12,12 @@
         }
     }
 
-    public class StoreBasketCommandHandler : ICommandHandler<StoreBasketCommand, StoreBasketResult>
+    public class StoreBasketCommandHandler(IBasketRepository basketRepository) : ICommandHandler<StoreBasketCommand, StoreBasketResult>
     {
-        public async Task<StoreBasketResult> Handle(StoreBasketCommand request, CancellationToken cancellationToken)
+        public async Task<StoreBasketResult> Handle(StoreBasketCommand command, CancellationToken cancellationToken)
         {
-            return new StoreBasketResult("swn");
+            await basketRepository.StoreBasket(command.Cart, cancellationToken);
+            return new StoreBasketResult(command.Cart.UserName);
         }
     }
 }
