@@ -1,6 +1,7 @@
 using BuildingBlocks.Behaviors;
 using BuildingBlocks.Behaviours;
 using BuildingBlocks.Exceptions.Handler;
+using Discount.Grpc;
 using HealthChecks.UI.Client;
 var builder = WebApplication.CreateBuilder(args);
 var assembly = typeof(Program).Assembly;
@@ -32,6 +33,20 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
+
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(opts =>
+{
+    opts.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    var handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
+    return handler;
+}); ;
 
 var app = builder.Build();
 
